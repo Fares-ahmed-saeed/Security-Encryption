@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Cipher Methods</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0a192f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #64ffda;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8892b0;
+            margin-bottom: 2rem;
+        }
+
+        .methods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .method-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .method-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(100, 255, 218, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .method-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .method-card:hover {
+            transform: translateY(-5px);
+            border-color: #64ffda;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
+        }
+
+        .method-card h3 {
+            color: #64ffda;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .method-card p {
+            color: #8892b0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 25, 47, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #64ffda;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(100, 255, 218, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #64ffda;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            border-radius: 5px;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #64ffda;
+        }
+
+        button {
+            background: #64ffda;
+            color: #0a192f;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #4cd7b0;
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            font-family: 'Roboto Mono', monospace;
+            word-break: break-all;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #8892b0;
+            margin-top: 4rem;
+        }
+
+        .section {
+            padding: 4rem 0;
+            position: relative;
+        }
+
+        .section h2 {
+            text-align: center;
+            color: #64ffda;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #64ffda;
+            border-radius: 3px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: #64ffda;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
+        }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: #64ffda;
+            margin-bottom: 1rem;
+        }
+
+        .info-card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            color: #8892b0;
+            line-height: 1.6;
+        }
+
+        .steps-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #64ffda;
+            color: #0a192f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .resource-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            border-color: #64ffda;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
+        }
+
+        .resource-card i {
+            font-size: 2.5rem;
+            color: #64ffda;
+            margin-bottom: 1rem;
+        }
+
+        .resource-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #64ffda;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid #64ffda;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: rgba(100, 255, 218, 0.1);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .footer-nav {
+            margin-bottom: 1rem;
+        }
+
+        .footer-nav a {
+            color: #8892b0;
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-nav a:hover {
+            color: #64ffda;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-link {
+            color: #8892b0;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: #64ffda;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .methods-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 2rem 0;
+            }
+
+            .section h2 {
+                font-size: 2rem;
+            }
+
+            .steps-container {
+                flex-direction: column;
+            }
+
+            .step {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>Advanced Cipher Methods</h1>
+            <p class="subtitle">Discover and learn various encryption methods with an interactive interface</p>
+        </header>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <h2>About Cryptography</h2>
+            <div class="content-grid">
+                <div class="info-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>What is Cryptography?</h3>
+                    <p>Cryptography is the science of securing communication through codes and ciphers. It's essential for protecting sensitive information in our digital world.</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-history"></i>
+                    <h3>Historical Impact</h3>
+                    <p>From ancient civilizations to modern digital security, cryptography has played a crucial role in shaping history and protecting sensitive information.</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>Modern Applications</h3>
+                    <p>Today, cryptography is used in everything from secure messaging to cryptocurrency, making it an essential part of our digital infrastructure.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methods Section -->
+        <section id="methods" class="section">
+            <h2>Encryption Methods</h2>
+            <div class="methods-grid">
+                <div class="method-card" onclick="openModal(1)">
+                    <h3>Caesar Cipher</h3>
+                    <p>A classic encryption method that shifts letters by a fixed number in the alphabet</p>
+                    <button>Try Now</button>
+                </div>
+
+                <div class="method-card" onclick="openModal(2)">
+                    <h3>Monoalphabetic Cipher</h3>
+                    <p>Substitutes each letter in the plaintext with a predetermined letter</p>
+                    <button>Try Now</button>
+                </div>
+
+                <div class="method-card" onclick="openModal(3)">
+                    <h3>Playfair Cipher</h3>
+                    <p>Advanced encryption using a 5×5 matrix to encrypt pairs of letters</p>
+                    <button>Try Now</button>
+                </div>
+
+                <div class="method-card" onclick="openModal(4)">
+                    <h3>Columnar Transposition</h3>
+                    <p>Encryption method that rearranges letters in a matrix using a key</p>
+                    <button>Try Now</button>
+                </div>
+
+                <div class="method-card" onclick="openModal(5)">
+                    <h3>Hill Cipher</h3>
+                    <p>Uses matrix operations to encrypt text with mathematical precision</p>
+                    <button>Try Now</button>
+                </div>
+
+                <div class="method-card" onclick="openModal(6)">
+                    <h3>Polyalphabetic Cipher</h3>
+                    <p>Advanced encryption using multiple alphabets to encrypt the text</p>
+                    <button>Try Now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="section">
+            <h2>How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Choose Method</h3>
+                    <p>Select from our collection of classical and modern encryption methods</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Enter Text</h3>
+                    <p>Input your message and encryption key in the secure interface</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Process</h3>
+                    <p>Watch as your text is transformed using advanced encryption algorithms</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="section">
+            <h2>Learning Resources</h2>
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <i class="fas fa-book"></i>
+                    <h3>Documentation</h3>
+                    <p>Detailed guides and explanations for each encryption method</p>
+                    <a href="#" class="resource-link">Learn More</a>
+                </div>
+                <div class="resource-card">
+                    <i class="fas fa-video"></i>
+                    <h3>Video Tutorials</h3>
+                    <p>Visual demonstrations of encryption concepts and techniques</p>
+                    <a href="#" class="resource-link">Watch Now</a>
+                </div>
+                <div class="resource-card">
+                    <i class="fas fa-code"></i>
+                    <h3>Code Examples</h3>
+                    <p>Real-world implementation examples in various programming languages</p>
+                    <a href="#" class="resource-link">View Code</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <nav class="footer-nav">
+                <a href="#about">About</a>
+                <a href="#methods">Methods</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#resources">Resources</a>
+            </nav>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle">Encryption Method</h2>
+            
+            <div class="input-group">
+                <label for="operation">Operation Type</label>
+                <select id="operation">
+                    <option value="encrypt">Encrypt</option>
+                    <option value="decrypt">Decrypt</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="input">Text</label>
+                <textarea id="input" rows="4"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="key">Key</label>
+                <input type="text" id="key">
+            </div>
+
+            <button onclick="processCipher()">Process</button>
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="js/background.js"></script>
+    <script>
+        // Encryption functions
+        function caesarEncrypt(text, key) {
+            let cipherList = [];
+            for (let char of text) {
+                const position = char.charCodeAt(0);
+                const newLetter = String.fromCharCode(position + key);
+                cipherList.push(newLetter);
+            }
+            return cipherList.join('');
+        }
+
+        function caesarDecrypt(text, key) {
+            let cipherList = [];
+            for (let char of text) {
+                const position = char.charCodeAt(0);
+                const newLetter = String.fromCharCode(position - key);
+                cipherList.push(newLetter);
+            }
+            return cipherList.join('');
+        }
+
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        function createMonoalphabeticCipher(key) {
+            key = key.toUpperCase().replace(/[^A-Z]/g, '');
+            let uniqueKey = '';
+            for (let char of key) {
+                if (!uniqueKey.includes(char)) {
+                    uniqueKey += char;
+                }
+            }
+            let usedChars = uniqueKey;
+            for (let i = 0; i < alphabet.length; i++) {
+                if (!usedChars.includes(alphabet[i])) {
+                    usedChars += alphabet[i];
+                }
+            }
+            let cipher = {};
+            for (let i = 0; i < alphabet.length; i++) {
+                cipher[alphabet[i]] = usedChars[i];
+            }
+            return cipher;
+        }
+
+        function monoalphabeticEncrypt(text, key) {
+            const cipher = createMonoalphabeticCipher(key);
+            let encryptedText = '';
+            text = text.toUpperCase().replace(/[^A-Z]/g, '');
+            for (let char of text) {
+                encryptedText += cipher[char];
+            }
+            return encryptedText;
+        }
+
+        function monoalphabeticDecrypt(text, key) {
+            const cipher = createMonoalphabeticCipher(key);
+            let decryptedText = '';
+            const reverseCipher = {};
+            for (let letter in cipher) {
+                reverseCipher[cipher[letter]] = letter;
+            }
+            text = text.toUpperCase().replace(/[^A-Z]/g, '');
+            for (let char of text) {
+                decryptedText += reverseCipher[char];
+            }
+            return decryptedText;
+        }
+
+        function createMatrix(key) {
+            key = key.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+            let matrix = [];
+            let alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+            let usedChars = new Set();
+            for (let char of key) {
+                if (!usedChars.has(char)) {
+                    matrix.push(char);
+                    usedChars.add(char);
+                }
+            }
+            for (let char of alphabet) {
+                if (!usedChars.has(char)) {
+                    matrix.push(char);
+                    usedChars.add(char);
+                }
+            }
+            let grid = [];
+            while (matrix.length) {
+                grid.push(matrix.splice(0, 5));
+            }
+            return grid;
+        }
+
+        function splitPairs(text) {
+            text = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+            let pairs = [];
+            for (let i = 0; i < text.length; i += 2) {
+                let a = text[i];
+                let b = text[i + 1] || "X";
+                if (a === b) {
+                    b = "X";
+                    i--;
+                }
+                pairs.push([a, b]);
+            }
+            return pairs;
+        }
+
+        function findPosition(grid, char) {
+            for (let row = 0; row < grid.length; row++) {
+                for (let col = 0; col < grid[row].length; col++) {
+                    if (grid[row][col] === char) {
+                        return [row, col];
+                    }
+                }
+            }
+            return null;
+        }
+
+        function playfairEncrypt(key, plaintext) {
+            let grid = createMatrix(key);
+            let pairs = splitPairs(plaintext);
+            let ciphertext = "";
+            for (let [a, b] of pairs) {
+                let [rowA, colA] = findPosition(grid, a);
+                let [rowB, colB] = findPosition(grid, b);
+                if (rowA === rowB) {
+                    ciphertext += grid[rowA][(colA + 1) % 5];
+                    ciphertext += grid[rowB][(colB + 1) % 5];
+                } else if (colA === colB) {
+                    ciphertext += grid[(rowA + 1) % 5][colA];
+                    ciphertext += grid[(rowB + 1) % 5][colB];
+                } else {
+                    ciphertext += grid[rowA][colB];
+                    ciphertext += grid[rowB][colA];
+                }
+            }
+            return ciphertext;
+        }
+
+        function playfairDecrypt(key, ciphertext) {
+            let grid = createMatrix(key);
+            let pairs = splitPairs(ciphertext);
+            let plaintext = "";
+            for (let [a, b] of pairs) {
+                let [rowA, colA] = findPosition(grid, a);
+                let [rowB, colB] = findPosition(grid, b);
+                if (rowA === rowB) {
+                    plaintext += grid[rowA][(colA - 1 + 5) % 5];
+                    plaintext += grid[rowB][(colB - 1 + 5) % 5];
+                } else if (colA === colB) {
+                    plaintext += grid[(rowA - 1 + 5) % 5][colA];
+                    plaintext += grid[(rowB - 1 + 5) % 5][colB];
+                } else {
+                    plaintext += grid[rowA][colB];
+                    plaintext += grid[rowB][colA];
+                }
+            }
+            return plaintext;
+        }
+
+        function encrypt(plaintext, key) {
+            plaintext = plaintext.replace(/ /g, '');
+            let n = plaintext.length;
+            let cols = key.length;
+            let rows = Math.ceil(n / cols);
+            let grid = Array.from({ length: rows }, () => Array(cols).fill(''));
+            for (let i = 0; i < n; i++) {
+                grid[Math.floor(i / cols)][i % cols] = plaintext[i];
+            }
+            let sortedKey = Array.from(key).map((char, index) => ({ char, index }))
+                .sort((a, b) => a.char.localeCompare(b.char));
+            let ciphertext = '';
+            for (let { index } of sortedKey) {
+                for (let row = 0; row < rows; row++) {
+                    if (grid[row][index] !== '') {
+                        ciphertext += grid[row][index];
+                    }
+                }
+            }
+            return ciphertext;
+        }
+
+        function decrypt(ciphertext, key) {
+            let cols = key.length;
+            let n = ciphertext.length;
+            let rows = Math.ceil(n / cols);
+            let grid = Array.from({ length: rows }, () => Array(cols).fill(''));
+            let sortedKey = Array.from(key).map((char, index) => ({ char, index }))
+                .sort((a, b) => a.char.localeCompare(b.char));
+            let index = 0;
+            for (let { index: originalIndex } of sortedKey) {
+                for (let row = 0; row < rows; row++) {
+                    if (index < n) {
+                        grid[row][originalIndex] = ciphertext[index];
+                        index++;
+                    }
+                }
+            }
+            let plaintext = '';
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (grid[row][col] !== '') {
+                        plaintext += grid[row][col];
+                    }
+                }
+            }
+            return plaintext;
+        }
+
+        let currentMethod = null;
+
+        function openModal(methodId) {
+            currentMethod = methodId;
+            const modal = document.getElementById('modal');
+            modal.classList.add('active');
+            document.getElementById('modalTitle').textContent = 
+                document.querySelector(`.method-card:nth-child(${methodId}) h3`).textContent;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('active');
+            document.getElementById('input').value = '';
+            document.getElementById('key').value = '';
+            document.getElementById('result').textContent = '';
+        }
+
+        function processCipher() {
+            const input = document.getElementById('input').value;
+            const key = document.getElementById('key').value;
+            const operation = document.getElementById('operation').value;
+            let result = '';
+
+            try {
+                if (operation === 'encrypt') {
+                    switch(currentMethod) {
+                        case 1: result = caesarEncrypt(input, parseInt(key)); break;
+                        case 2: result = monoalphabeticEncrypt(input, key); break;
+                        case 3: result = playfairEncrypt(key, input); break;
+                        case 4: result = encrypt(input, key); break;
+                        case 5: result = hillEncrypt(input, key); break;
+                        case 6: result = encryptPoly(input, key); break;
+                    }
+                } else {
+                    switch(currentMethod) {
+                        case 1: result = caesarDecrypt(input, parseInt(key)); break;
+                        case 2: result = monoalphabeticDecrypt(input, key); break;
+                        case 3: result = playfairDecrypt(key, input); break;
+                        case 4: result = decrypt(input, key); break;
+                        case 5: result = hillDecrypt(input, key); break;
+                        case 6: result = decryptPoly(input, key); break;
+                    }
+                }
+                document.getElementById('result').textContent = result;
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html> 
